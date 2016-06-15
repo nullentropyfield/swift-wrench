@@ -179,8 +179,8 @@ $VMName = "pstest005b"
 $VM = Get-AzureVM -ServiceName $ServiceName -Name $VMName
 
 # Storage Info
-$storageAccountName = "bxdiagnostic"
-$storageAccountKey = "u1GM0hq+DhUq1CiGuDMT77B6xiNjaz3nmhHMcRmCqJp2yvd0ZTE2iOgnx03gdYhzgKnDkTRETvqB2pZth/T7rA=="
+$storageAccountName = $env:ClassicStorageName 
+$storageAccountKey = $env:ClassicStorageKey 
 
 Enable-AzureWinMonitoring $VM $storageAccountName $storageAccountKey
 

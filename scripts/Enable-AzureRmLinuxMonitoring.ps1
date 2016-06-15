@@ -82,8 +82,8 @@ $vmName = "pstets002o"
 $VM = Get-AzureRMVM -ResourceGroupName $resourceGroupName -Name $vmName
 
 # Get Storage Account and info
-$storageAccountName ="diagtest6744"
-$storageAccountKey = "bzju6LaboFuuGQX99JAy2/38rkFcDXiJX07DlBJ21/2lEvutoxp8wWsKaYkkQvHgBD0/rkY2x2rwQ6s5wsNm+w=="
+$storageAccountName = $env:RmStorageName
+$storageAccountKey = $env:RmStorageKey
 $StorageAccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName
 
 
