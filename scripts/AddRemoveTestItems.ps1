@@ -21,7 +21,7 @@ function Remove-VmArtifacts
    
 }
 
-Remove-VmArtifacts "pstest004c"
+Remove-VmArtifacts "pstest005b"
 
 function Remove-MonitoringTables 
 {
@@ -34,7 +34,7 @@ function Remove-MonitoringTables
     $tables = Get-AzureStorageTable -Context $storageAccount.Context
     Foreach ($table in $tables) {
 
-        Remove-AzureStorageTable –Name $table.Name –Context $storageAccount.Context
+        Remove-AzureStorageTable –Name $table.Name –Context $storageAccount.Context -Force
 
     }
 }
@@ -76,7 +76,7 @@ function Remove-RmVmArtifacts
     $tables = Get-AzureStorageTable -Context $storageAccount.Context
     Foreach ($table in $tables) {
 
-        Remove-AzureStorageTable –Name $table.Name –Context $storageAccount.Context
+        Remove-AzureStorageTable –Name $table.Name –Context $storageAccount.Context -Force
 
     }
  }

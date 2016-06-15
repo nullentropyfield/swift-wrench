@@ -3,8 +3,6 @@
 Login-AzureRmAccount
 
 
-
-
 function Create-AzureVMDiagnosticResourceId
 {
     <#
@@ -127,13 +125,57 @@ function Enable-AzureWinMonitoring
     #  Update-AzureVM
 }
 
+function Test-Enabled
+{
+
+    <#
+
+    .SYNOPSIS
+    Test if Azure Monitoring for Win VMs is enabled in ARM
+
+    .PARAMETER ServiceName 
+    the ServiceName of the VM
+
+    .PARAMETER VMName 
+    the VMName of the VM
+
+
+    #>
+
+    $ServiceName = $args[0]
+    $VMName = $args[1]
+
+    $VM = Get-AzureVM -ServiceName $ServiceName -Name $VMName
+    $extensionName = "IaaSDiagnostics"
+  
+    # Check if enabled
+    $extension = Get-AzureVMDiagnosticsExtension -VM $VM
+   
+    
+    if($extension){
+        if($extension.ExtensionName -match $extensionName)
+        {
+            return $extension.PublicConfiguration.Length -gt 250 #Disabling monitoring leaves an empty config file
+        }
+        else {
+
+            return $false
+        }
+    }
+    else
+    {
+        return $false
+    }
+
+}
+
 # Get Subscription and VM
 #$subscriptons = Get-AzureSubscription
 #$curSubscription = $subscriptons[1]
 
 # Get VM
-$ServiceName = "pstest004c"
-$VMName = "pstest004c"
+$ServiceName = "pstest005b"
+$VMName = "pstest005b"
 $VM = Get-AzureVM -ServiceName $ServiceName -Name $VMName
 
 # Storage Info
@@ -142,8 +184,6 @@ $storageAccountKey = "u1GM0hq+DhUq1CiGuDMT77B6xiNjaz3nmhHMcRmCqJp2yvd0ZTE2iOgnx0
 
 Enable-AzureWinMonitoring $VM $storageAccountName $storageAccountKey
 
-# Check if enabled
-$extension = Get-AzureVMDiagnosticsExtension -VM $VM
-$extension = $VM.ResourceExtensionStatusList
-#$extension = Get-AzureRmVMDiagnosticsExtension -ResourceGroupName $resourceGroupName -VMName $vmName
-#$extension.PublicSettings
+
+# Test if Enabled
+Test-Enabled $ServiceName $VMName
