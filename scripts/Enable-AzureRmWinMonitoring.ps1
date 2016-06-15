@@ -1,6 +1,6 @@
 ﻿$DebugPreference =  "Continue" #"SilentContinue"
 
-Login-AzureRmAccount
+#Login-AzureRmAccount
 
 
 function Enable-AzureRmWinMonitoring
@@ -30,18 +30,49 @@ function Enable-AzureRmWinMonitoring
     $resourceGroupName = $args[1]
     $storageAccountName = $args[2]
     $storageAccountKey = $args[3]
-   
 
     #!! The config has a hard-coded resourceID
-    $Config_Path = "C:\Users\brlamore\OneDrive - Microsoft\PowershellScripts\WadConfig.xml"
+    $configPath = "{0}\..\configs\WinWadConfig.xml" -f $PSScriptRoot
 
-    Set-AzureRmVMDiagnosticsExtension  -ResourceGroupName $resourceGroupName -VMName $VM.name -DiagnosticsConfigurationPath $Config_Path -StorageAccountName $storageAccountName -StorageAccountKey $storageAccountKey
+    Set-AzureRmVMDiagnosticsExtension  -ResourceGroupName $resourceGroupName -VMName $VM.name -DiagnosticsConfigurationPath $configPath -StorageAccountName $storageAccountName -StorageAccountKey $storageAccountKey
+
+}
+
+function Test-RmEnabled
+{
+
+    <#
+
+    .SYNOPSIS
+    Test if Azure Monitoring for Win VMs is enabled in ARM
+
+    .PARAMETER resourceGroupName 
+    the resource group name for the VM
+
+    .PARAMETER vmName
+    the name of the VM
+
+    #>
+
+    $resourceGroupName = $args[0]
+    $vmName = $args[1]
+   
+    # Check if enabled
+    $extension = Get-AzureRmVMDiagnosticsExtension -ResourceGroupName $resourceGroupName -VMName $vmName
+    
+    if($extension){
+        return $true
+    }
+    else
+    {
+        return $false
+    }
 
 }
 
 #Get VM
 $resourceGroupName = "diagtest"
-$vmName = "pstest004a"
+$vmName = "pstest005a"
 $VM = Get-AzureRMVM -ResourceGroupName $resourceGroupName -Name $vmName
 
 # Get Storage Account and info
@@ -49,12 +80,7 @@ $storageAccountName ="diagtest6744"
 $storageAccountKey = "bzju6LaboFuuGQX99JAy2/38rkFcDXiJX07DlBJ21/2lEvutoxp8wWsKaYkkQvHgBD0/rkY2x2rwQ6s5wsNm+w=="
 $StorageAccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName
 
-
+# Get Config Path
 Enable-AzureRmWinMonitoring $VM $resourceGroupName $storageAccountName $storageAccountKey
 
-# Check if enabled
-$extension = Get-AzureRmVMDiagnosticsExtension -ResourceGroupName $resourceGroupName -VMName $vmName
-$extension.PublicSettings
-
-
-#Set-AzureRmDiagnosticSetting -Enabled $true -ResourceId $VM.Id -StorageAccountId $StorageAccount.Id
+#Test-RmEnabled $resourceGroupName $vmName

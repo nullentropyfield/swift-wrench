@@ -18,19 +18,41 @@ function Remove-VmArtifacts
     Remove-AzureVm -Name $vmName -ServiceName $vmName
 
     Remove-AzureService -ServiceName $vmName -force
-
    
 }
 
-Remove-VmArtifacts "pstest004b"
+Remove-VmArtifacts "pstest004c"
+
+function Remove-MonitoringTables 
+{
+
+    $storageAccountName =  $args[0]
+
+    $storageAccount = Get-AzureStorageAccount -StorageAccountName $storageAccountName
+
+    # Delete Metric Tables
+    $tables = Get-AzureStorageTable -Context $storageAccount.Context
+    Foreach ($table in $tables) {
+
+        Remove-AzureStorageTable –Name $table.Name –Context $storageAccount.Context
+
+    }
+}
+
+
+$storageAccountName ="bxdiagnostic"
+
+Remove-MonitoringTables $storageAccountName
+
 
 
 function Remove-RmVmArtifacts
 {
 
-    $vmName = "pstest004b"
-    $resourceGroupName = "diagtest"
-    $storageAccountName ="diagtest6744"
+    $vmName = $args[0]
+    $resourceGroupName = $args[1]
+    $storageAccountName = $args[2]
+   
 
     $storageAccount = Get-AzureRmStorageAccount -Name $storageAccountName -ResourceGroupName $resourceGroupName
 
@@ -43,7 +65,7 @@ function Remove-RmVmArtifacts
 
 
     # Delete VM   
-    Remove-AzureRmVm -Name $vmName -ResourceGroupName $resourceGroupName
+    Remove-AzureRmVm -Name $vmName -ResourceGroupName $resourceGroupName -Force
 
     Remove-AzureRmNetworkSecurityGroup -Name $vmName -ResourceGroupName $resourceGroupName -Force
 
@@ -58,3 +80,9 @@ function Remove-RmVmArtifacts
 
     }
  }
+
+$vmName = "pstest005a"
+$resourceGroupName = "diagtest"
+$storageAccountName ="diagtest6744"
+
+Remove-RmVmArtifacts $vmName $resourceGroupName $storageAccountName
